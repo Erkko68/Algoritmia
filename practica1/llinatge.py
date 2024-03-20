@@ -1,8 +1,7 @@
 import sys
 
-
 def parse_file(filename):
-    ''' Returns a list of tuples (parent,child) created while reading the provided file name '''
+    #Returns a list of tuples (parent,child) created while reading the provided file name
     global node
     edges = []
     with open(filename, 'r') as file:
@@ -32,25 +31,37 @@ def construct_tree(edges):
     # Return the dictionary representing the tree
     return tree_dict
 
-dic={}
+def search_deepest_childs(tree_dict, node_value):
+    stack = [(node_value, 0)]  # Use a stack to keep track of nodes and their depths
 
-def search_deepest_childs(tree_dict, node_value, depth=0):
-    # Print the current node value with appropriate indentation
+    while stack:
+        node, depth = stack.pop()  # Pop the top node and its depth
 
-    # Get the children of the current node
-    children = tree_dict.get(node_value, [])
+        children = tree_dict.get(node, [])  # Get children of the current node
 
-    # Recursively print each child
-    if children:
-        dic[depth] = dic.get(depth, []) + children
-    for child in children:
-        search_deepest_childs(tree_dict, child, depth + 1)
+        if not children:
+            yield node, depth  # Yield the deepest node and its depth
+        else:
+            for child in children:
+                stack.append((child, depth + 1))  # Add children to the stack with their updated depths
+
 
 def main(filename):
     edges = parse_file(filename)
     tree = construct_tree(edges)
-    search_deepest_childs(tree,node)
-    print(dic[max(dic.keys())])
+    list = search_deepest_childs(tree,node)
+
+    # Convert list into a dictionary
+    result_dict = {}
+    for letter, number in list:
+        if number in result_dict:
+            result_dict[number].append(letter)
+        else:
+            result_dict[number] = [letter]
+
+    result = sorted(result_dict[max(result_dict.keys())])
+    print(' '.join(result))
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
