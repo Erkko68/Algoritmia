@@ -1,5 +1,0 @@
-MT
-MF MT
-MT PR
-MT OO
-MT XB
