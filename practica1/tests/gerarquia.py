@@ -1,59 +1,82 @@
+"""
+Module to analyze hierarchical structures.
+"""
+
 import sys
 
 def parse_file(filename):
-    #Returns a list of tuples (parent,child) created while reading the provided file name
-    global node
+    """
+    Parses the file and returns a list of edges and the parent node.
+
+    Args:
+    filename (str): The name of the file to parse.
+
+    Returns:
+    tuple: A tuple containing a list of edges (as tuples) and the parent node.
+    """
+    parent_node = None  # Initialize parent_node
     edges = []
-    with open(filename, 'r') as file:
+    with open(filename, 'r', encoding='utf-8') as file:
         for line in file:
-            if(len(line.strip().split()) == 1):
-                node = str(line.strip().split()[0])
+            if len(line.strip().split()) == 1:
+                parent_node = str(line.strip().split()[0])
             else:
                 parent, child = line.strip().split()
                 edges.append((parent, child))
-    return edges
+    return edges, parent_node
 
 def construct_tree(edges):
-    # Extract the root value from the first pair of parent and child in the list of edges
+    """
+    Constructs a tree dictionary from a list of edges.
+
+    Args:
+    edges (list): A list of edges (as tuples).
+
+    Returns:
+    dict: A dictionary representing the tree structure.
+    """
     root_value = edges[0][0]
-
-    # Create a dictionary to map node values to their children
     tree_dict = {root_value: []}
-
-    # Iterate over each pair of parent and child in the list of edges
     for parent, child in edges:
-        # If the parent node is not already in the tree_dict, add it with an empty list of children
         if parent not in tree_dict:
             tree_dict[parent] = []
-        # Add the child node to the list of children of the parent node
         tree_dict[parent].append(child)
-
-    # Return the dictionary representing the tree
     return tree_dict
 
 def search_deepest_childs(tree_dict, node_value):
-    stack = [(node_value, 0)]  # Use a stack to keep track of nodes and their depths
+    """
+    Searches for the deepest children in the tree.
 
+    Args:
+    tree_dict (dict): A dictionary representing the tree structure.
+    node_value (str): The value of the node from which to start the search.
+
+    Yields:
+    tuple: A tuple containing the deepest node and its depth.
+    """
+    stack = [(node_value, 0)]
     while stack:
-        node, depth = stack.pop()  # Pop the top node and its depth
-
-        children = tree_dict.get(node, [])  # Get children of the current node
-
+        node, depth = stack.pop()
+        children = tree_dict.get(node, [])
         if not children:
-            yield node, depth  # Yield the deepest node and its depth
+            yield node, depth
         else:
             for child in children:
-                stack.append((child, depth + 1))  # Add children to the stack with their updated depths
-
+                stack.append((child, depth + 1))
 
 def main(filename):
-    edges = parse_file(filename)
-    tree = construct_tree(edges)
-    list = search_deepest_childs(tree,node)
+    """
+    Main function to execute the program.
 
-    # Convert list into a dictionary
+    Args:
+    filename (str): The name of the file to process.
+    """
+    edges, parent_node = parse_file(filename)
+    tree = construct_tree(edges)
+    generator = search_deepest_childs(tree, parent_node)
+
     result_dict = {}
-    for letter, number in list:
+    for letter, number in generator:
         if number in result_dict:
             result_dict[number].append(letter)
         else:
@@ -62,10 +85,8 @@ def main(filename):
     result = sorted(result_dict[max(result_dict.keys())])
     print(' '.join(result))
 
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python script.py filename")
         sys.exit(1)
-    filename = sys.argv[1]
-    main(filename)
+    main(sys.argv[1])
