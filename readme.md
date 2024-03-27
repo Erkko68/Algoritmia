@@ -8,7 +8,7 @@ En aquest apartat ens centrem solament en les funcions principals considerant qu
 
 La primera part del nostre algorisme es centra en crear un diccionari que representarà els nodes del arbre, el format que seguirà aquest diccionari serà de la forma:
 ```
-{'Parent-1':[Childs],'Parent-2':[Childs],'Parent-N':[Childs]}
+{'Parent-1':[Childs],'Parent-2':[Childs], ... ,'Parent-N':[Childs]}
 ```
 La funció encarregada de crear aquesta conversió és la mostrada a continuació i rebrà parelles Pare-Fill que anirà afegint al diccionari a retornar:
 ```
@@ -46,7 +46,7 @@ En cas que existeixi algun node fill els haurem de recòrrer per afegir-los al s
 
 Per tant podem aproximar el cost com:
 ```
-T(d) = C1 + C2 * (C3 + C4 + C5 + C6 + (C7 * C8))
+T(n) = C1 + C2 * (C3 + C4 + C5 + C6 + (C7 * C8))
      = 1 + n * (n-1 + n-1 + n-1 + n-1 + (n * 1))
      = 1 + 5n^2 - 4n
      ≈ n^2
@@ -74,9 +74,68 @@ El cost de la funció max() és O(n), podriam pensar que obtenir les claus del d
 
 Aleshores podem calcular el cost total d'aquesta implementació:
 ```
-T(d) = construct_tree(n) + search_deepest_childs(n) + result_dict(n) + max(n) =
+T(n) = construct_tree(n) + search_deepest_childs(n) + result_dict(n) + max(n) =
      ≈ n + n^2 + n + n 
      ≈ n^2 + 3n
      ≈ n^2
 ```
 Sent la funció de cerca la predominant mostrant un cost O(n^2).
+
+## Anàlisi: Implementació en Haskell
+La implementació en haskell s'ha de realitzar de forma recursiva, ja que aquesta és la gràcia del llenguatge. La implementació realitzada segueix el mateix procediment que el realitzat amb Python.
+
+Primer convertirem les dades obtingudes del fitxer a una llista de parelles amb el format (Pare:Fill) :
+```
+createPairs :: [String] -> [(String, String)]   Cost Times
+createPairs = map createPair                    C1    n
+
+createPair :: String -> (String, String)
+createPair str = case words str of              C2    1
+    (father:child:_) -> (father, child)
+    _ -> error "Invalid format. Expected 'Father child'."
+```
+Aquesta funció aprofita el `map` per executar la funció `createPair` per cada element de la llista. La funció `createPair` simplement converteix el string al format parella i per tant en un temps constant O(1). La complexitat de la funció en conjunt és de O(n) al tenir que realitzar aquesta operació constant per cada element de la llista inicial: 1*n = n -> O(n).
+
+A continuació tenim que construir un diccionari representant l'arbre que estem tractant:
+```
+buildTree :: [(String, String)] -> Map.Map String [String]
+buildTree = foldl insertPair Map.empty
+  where
+    -- Inserting pairs into the tree dictionary
+    insertPair tree (parent, child) = Map.insertWith (++) parent [child] tree
+```
+Centrant-nos en incertar les parelles al diccionari foldl `insertPair Map.empty` tenim que aplica `insertPair` a cada parell de la llista obtenint un cost O(n) a causa de la iteració sobre la llista de n parelles.
+La funció `insertPair` simplement afegeix una nova entrada al diccionari o amplia el nombre de fills d'un determinat node, el temps serà d'O(1) per a la majoria d'operacions en diccionaris moderns basats en hash. En casos rars amb col·lisions de hash o rehashing, podria ser lleugerament superior, però considerem un temps mitjà. Obtenint finalment un cost O(n) sent `map` el cost predominant.
+
+Finalment amb les les dades creades i organitzades en un diccionari podem realitzar la cerca del nodes:
+```
+deepestChildren :: Map.Map String [String] -> String -> Maybe [String]          Cost Times
+deepestChildren tree key = sort <$> deepestHelper tree [key]                    C1   1
+
+deepestHelper :: Map.Map String [String] -> [String] -> Maybe [String]
+deepestHelper _ [] = Nothing                                                    C2   1
+deepestHelper tree parents =
+    let children = concatMap (\p -> fromMaybe [] (Map.lookup p tree)) parents   C3   n
+    in if null children                                                         C4   n
+       then Just parents                                                        C5   n
+       else deepestHelper tree children                                         C6   n
+```
+La nostra funció depen de la crida a una funció auxiliar `deepestHelper`, aquesta crida solament s'executarà un cop i per tant cost constant O(1). La funció `deepestHelper` es la que executa les crides recursives i incersions al dicionari final. El cas base és quan la parella es buida i tindrà cost constant el fet de retornar `nothing`. 
+La crida recursiva es pot resumir en una iteració sobre la llista de claus representant els pares. Per a cada clau, comprova si ja existeix com a clau al diccionari d'arbre.
+Si el pare existeix, obtè la llista dels seus fills del diccionari.
+Si el pare no existeix, considera que el pare no té fills (llista buida).
+Finalment, concatena totes aquestes llistes de fills en una única llista i l'assigna a la variable fills. El cost d'aquesta operació es reduiex a O(n) en concret amb la operació `concatMap` al existir la possibilitat de concatenar tots els fills concentrats en aquell nivell, ja que la cerca `Map.looup` en taules de hash actuals sol ser un cost constant.
+Finalment aquesta operació s'executarà `d` vegades segons la profunditat del arbre obtenint una complexitat O(n*d), si tenim en compte el pitjor cas possible on la estructura del arbre seria:
+```
+A -> B -> C -> D -> ... -> Z
+```
+I per tant `d = n` el cost d'aquesta funció es podria considerar O(n^2).
+
+Si tornem a calcular el cost en conjunt del programa obtenim que:
+```
+T(n) = createPairs(n) + buildTree(n) + deepestChildren(n) + sort(n) = 
+     ≈ n + n + n^2 + n
+     ≈ n^2 + 3n
+     ≈ O(n^2)
+```
+Que es el mateix cost obtingut en la implementació en Python.
