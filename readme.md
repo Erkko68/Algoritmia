@@ -6,7 +6,7 @@ Al final, totes dues implementacions haurien de tenir el mateix cost computacion
 ## Anàlisi: Implementació en Python
 En aquest apartat ens centrem solament en les funcions principals considerant que ja tenim carregades a memòria les dades obtingudes del fitxer.
 
-La primera part del nostre algorisme es centra en crear un diccionari que representarà els nodes del arbre, el format que seguirà aquest diccionari serà de la forma:
+La primera part del nostre algorisme se centra a crear un diccionari que representarà els nodes de l'arbre, el format que seguirà aquest diccionari serà de la forma:
 ```
 {'Parent-1':[Childs],'Parent-2':[Childs], ... ,'Parent-N':[Childs]}
 ```
@@ -21,11 +21,11 @@ def construct_tree(edges):                Cost   Times
         tree_dict[parent].append(child)   C6     n
     return tree_dict                      C7     1 
 ```
-Les dues primeres línies solament serveixen per inicialitzar el diccionari i s'executen en temps constant, el bucle `for` té cost `n` en funció del nombre de parelles que rebi la funció. Per cada parella haurà de comprobar si la clau es troba en el diccionari, encara que en diccionaris, al estar implementats amb hash tables, el cost mitjà de cerca dins d'un diccionari es constant.
+Les dues primeres línies solament serveixen per inicialitzar el diccionari i s'executen en temps constant, el bucle `for` té cost `n` en funció del nombre de parelles que rebi la funció. Per cada parella haurà de comprovar si la clau es troba en el diccionari, encara que en diccionaris, en estar implementats amb hash tables, el cost mitjà de cerca dins d'un diccionari és constant.
 
-Així de forma general i considerant que operacions d'inserció i cerca en un diccionari estan implementades amb hash tables, i per tant amb un cost mitjà constant, aquesta funció tindria una complexitat O(n) en funció del nombre de parelles que rebi ja que necessàriament ha d'iterar per totes elles en el bucle `for`.
+Així de forma general i considerant que operacions d'inserció i cerca en un diccionari estan implementades amb hash tables, i per tant amb un cost mitjà constant, aquesta funció tindria una complexitat: O(n) en funció del nombre de parelles que rebi, ja que necessàriament ha d'iterar per totes elles en el bucle `for`.
 
-La següent funció és la encarregada de realitzar la cerca dels nodes fill més allunyats donat un node del arbre en concret:
+La següent funció és l'encarregada de realitzar la cerca dels nodes fill més allunyat donat un node de l'arbre en concret:
 ```
 def search_deepest_childs(tree_dict, node_value):   Cost  Times
     stack = [(node_value, 0)]                       C1    1
@@ -38,13 +38,13 @@ def search_deepest_childs(tree_dict, node_value):   Cost  Times
             for child in children:                  C7    n-1*n
                 stack.append((child, depth + 1))    C8    n-1*n
 ```
-La inicialització del stack (C1) serà de cost constant O(1). El bucle encarregat de realitzar les operacions s'executarà sempre i que existeixen elements dins del stack, en el pitjor dels casos contindrà tots els elements i per tant el seu cost serà O(n) en funció del nombre d'elements.
+La inicialització del stack (C1) serà de cost constant O(1). El bucle encarregat d'efectuar les operacions s'executarà sempre i que existeixen elements dins del stack, en el pitjor dels casos contindrà tots els elements i, per tant, el seu cost serà O(n) en funció del nombre d'elements.
 L'operació pop és de cost constant O(1) i el get com hem comentat amb anterioritat tendeix a una mitjana constant O(1).
 
-El primer condicional comproba si existeixen nodes fills després d'obtenir-los del diccionari, comprobar si existeix algun valor es cost constant i executar el `yield` també.
-En cas que existeixi algun node fill els haurem de recòrrer per afegir-los al stack, aquesta operació s'executaria en el pitjor dels casos O(n) en cas que un sol node contingués tots els fills de la llista. I finalment afegir cada nou node és simplement cost constant.
+El primer condicional comprova si existeixen nodes fills després d'obtenir-los del diccionari, comprovar si existeix algun valor és cost constant i executar el `yield` també.
+En cas que existeixi algun node fill els haurem de recórrer per afegir-los al stack, aquesta operació s'executaria en el pitjor dels casos O(n) en cas que un sol node contingués tots els fills de la llista. I finalment afegir cada nou node és simplement cost constant.
 
-Per tant podem aproximar el cost com:
+Per tant, podem aproximar el cost com:
 ```
 T(n) = C1 + C2 * (C3 + C4 + C5 + C6 + (C7 * C8))
      = 1 + n * (n-1 + n-1 + n-1 + n-1 + (n * 1))
@@ -53,7 +53,7 @@ T(n) = C1 + C2 * (C3 + C4 + C5 + C6 + (C7 * C8))
 ```
 Obtenint un cost exponencial: O(n^2).
 
-Aquest algorisme ens permet obtenir els fills del node i la profunditat en la que es troben, a continuació requerim d'una funció que ens permeti classificar tots els nodes trobats en funció de la seva profunditat:
+Aquest algorisme ens permet obtenir els fills del node i la profunditat en la qual es troben, a continuació requerim una funció que ens permeti classificar tots els nodes trobats en funció de la seva profunditat:
 ```                                              Cost Times
 result_dict = {}                                 C1   1
 for letter, number in generator:                 C2   n
@@ -63,14 +63,14 @@ for letter, number in generator:                 C2   n
         result_dict[number] = [letter]           C5   n
 ```
 
-Aquest bucle iterarà sobre tots els elements retornats per la funció anterior i agruparà cada node en funció de la seva profunditat, el cost depen del bucle `for` i la resta d'opreacions son de cost constant, per aquest motiu el cost és O(n).
+Aquest bucle iterarà sobre tots els elements retornats per la funció anterior i agruparà cada node en funció de la seva profunditat, el cost depèn del bucle `for` i la resta d'operacions són de cost constant, per aquest motiu el cost és O(n).
 
-I finalment agafarem els nodes més profunds del diccionari, aquells que tinguin la profunditat més gran. Per aixó requerim de trobar el màxim entre les diferents claus del diccionari:
+I finalment agafarem els nodes més profunds del diccionari, aquells que tinguin la profunditat més gran. Per això requerim trobar el màxim entre les diferents claus del diccionari:
 ```
 result_dict[max(result_dict.keys())]
 ```
 
-El cost de la funció max() és O(n), podriam pensar que obtenir les claus del diccionari també es lineal però amb Python3 s'utilitza una vista, operació que resulta molt efficient tenint un cost mitjà de O(1).
+El cost de la funció max() és O(n), podríem pensar que obtenir les claus del diccionari també és lineal, però amb Python3 s'utilitza una vista, operació que resulta molt eficient tenint un cost mitjà de O(1).
 
 Aleshores podem calcular el cost total d'aquesta implementació:
 ```
@@ -94,9 +94,9 @@ createPair str = case words str of              C2    1
     (father:child:_) -> (father, child)
     _ -> error "Invalid format. Expected 'Father child'."
 ```
-Aquesta funció aprofita el `map` per executar la funció `createPair` per cada element de la llista. La funció `createPair` simplement converteix el string al format parella i per tant en un temps constant O(1). La complexitat de la funció en conjunt és de O(n) al tenir que realitzar aquesta operació constant per cada element de la llista inicial: 1*n = n -> O(n).
+Aquesta funció aprofita el `map` per executar la funció `createPair` per cada element de la llista. La funció `createPair` simplement converteix el string al format parella i, per tant, en un temps constant O(1). La complexitat de la funció en conjunt és de O(n) en haver d'efectuar aquesta operació constant per cada element de la llista inicial: 1*n = n -> O(n).
 
-A continuació tenim que construir un diccionari representant l'arbre que estem tractant:
+A continuació hem de construir un diccionari representant l'arbre que estem tractant:
 ```
 buildTree :: [(String, String)] -> Map.Map String [String]
 buildTree = foldl insertPair Map.empty
@@ -104,10 +104,10 @@ buildTree = foldl insertPair Map.empty
     -- Inserting pairs into the tree dictionary
     insertPair tree (parent, child) = Map.insertWith (++) parent [child] tree
 ```
-Centrant-nos en incertar les parelles al diccionari foldl `insertPair Map.empty` tenim que aplica `insertPair` a cada parell de la llista obtenint un cost O(n) a causa de la iteració sobre la llista de n parelles.
+Centrant-nos en incertar les parelles al diccionari foldl `insertPair Map.empty` ha d'aplicar `insertPair` a cada parell de la llista obtenint un cost O(n) a causa de la iteració sobre la llista de n parelles.
 La funció `insertPair` simplement afegeix una nova entrada al diccionari o amplia el nombre de fills d'un determinat node, el temps serà d'O(1) per a la majoria d'operacions en diccionaris moderns basats en hash. En casos rars amb col·lisions de hash o rehashing, podria ser lleugerament superior, però considerem un temps mitjà. Obtenint finalment un cost O(n) sent `map` el cost predominant.
 
-Finalment amb les les dades creades i organitzades en un diccionari podem realitzar la cerca del nodes:
+Finalment, amb les dades creades i organitzades en un diccionari podem realitzar la cerca dels nodes:
 ```
 deepestChildren :: Map.Map String [String] -> String -> Maybe [String]          Cost Times
 deepestChildren tree key = sort <$> deepestHelper tree [key]                    C1   1
@@ -120,16 +120,16 @@ deepestHelper tree parents =
        then Just parents                                                        C5   n
        else deepestHelper tree children                                         C6   n
 ```
-La nostra funció depen de la crida a una funció auxiliar `deepestHelper`, aquesta crida solament s'executarà un cop i per tant cost constant O(1). La funció `deepestHelper` es la que executa les crides recursives i incersions al dicionari final. El cas base és quan la parella es buida i tindrà cost constant el fet de retornar `nothing`. 
+La nostra funció depèn de la crida a una funció auxiliar `deepestHelper`, aquesta crida solament s'executarà un cop i per tant cost constant O(1). La funció `deepestHelper` es la que executa les crides recursives i insercions al diccionari final. El cas base és quan la parella es buida i tindrà cost constant el fet de retornar `nothing`. 
 La crida recursiva es pot resumir en una iteració sobre la llista de claus representant els pares. Per a cada clau, comprova si ja existeix com a clau al diccionari d'arbre.
-Si el pare existeix, obtè la llista dels seus fills del diccionari.
+Si el pare existeix, obté la llista dels seus fills del diccionari.
 Si el pare no existeix, considera que el pare no té fills (llista buida).
-Finalment, concatena totes aquestes llistes de fills en una única llista i l'assigna a la variable fills. El cost d'aquesta operació es reduiex a O(n) en concret amb la operació `concatMap` al existir la possibilitat de concatenar tots els fills concentrats en aquell nivell, ja que la cerca `Map.looup` en taules de hash actuals sol ser un cost constant.
-Finalment aquesta operació s'executarà `d` vegades segons la profunditat del arbre obtenint una complexitat O(n*d), si tenim en compte el pitjor cas possible on la estructura del arbre seria:
+Finalment, concatena totes aquestes llistes de fills en una única llista i l'assigna a la variable fills. El cost d'aquesta operació es redueix a O(n) en concret amb l'operació `concatMap` en existir la possibilitat de concatenar tots els fills concentrats en aquell nivell, ja que la cerca `Map.looup` en taules de hash actuals sol ser un cost constant.
+Finalment, aquesta operació s'executarà `d` vegades segons la profunditat de l'arbre obtenint una complexitat O(n*d), si tenim en compte el pitjor cas possible on l'estructura de l'arbre seria:
 ```
 A -> B -> C -> D -> ... -> Z
 ```
-I per tant `d = n` el cost d'aquesta funció es podria considerar O(n^2).
+I, per tant, `d = n` el cost d'aquesta funció es podria considerar O(n^2).
 
 Si tornem a calcular el cost en conjunt del programa obtenim que:
 ```
@@ -138,4 +138,4 @@ T(n) = createPairs(n) + buildTree(n) + deepestChildren(n) + sort(n) =
      ≈ n^2 + 3n
      ≈ O(n^2)
 ```
-Que es el mateix cost obtingut en la implementació en Python.
+Que és el mateix cost obtingut en la implementació en Python.
