@@ -3,8 +3,11 @@ El problema abordat en aquesta pràctica és la cerca dels nodes fills més allu
 Al final, totes dues implementacions haurien de tenir el mateix cost computacional, i això és el que analitzarem en aquest document.
 
 
-## Anàlisi: Implementació en Python
+## Anàlisi Teòric
+
 En aquest apartat ens centrem solament en les funcions principals considerant que ja tenim carregades a memòria les dades obtingudes del fitxer.
+
+### Implementació en Python
 
 La primera part del nostre algorisme se centra a crear un diccionari que representarà els nodes de l'arbre, el format que seguirà aquest diccionari serà de la forma:
 ```
@@ -41,14 +44,14 @@ def search_deepest_childs(tree_dict, node_value):   Cost  Times
 La inicialització del stack (C1) serà de cost constant O(1). El bucle encarregat d'efectuar les operacions s'executarà sempre i que existeixen elements dins del stack, en el pitjor dels casos contindrà tots els elements i, per tant, el seu cost serà O(n) en funció del nombre d'elements.
 L'operació pop és de cost constant O(1) i el get com hem comentat amb anterioritat tendeix a una mitjana constant O(1).
 
-El primer condicional comprova si existeixen nodes fills després d'obtenir-los del diccionari, comprovar si existeix algun valor és cost constant i executar el `yield` també.
-En cas que existeixi algun node fill els haurem de recórrer per afegir-los al stack, aquesta operació s'executaria per cada node fill (c) solament un cop. D'aquesta manera solament estem afegint al stack en els pitjors dels casos cada node del arbre `n`.
+El primer condicional comprova si existeixen nodes fills després d'obtenir-los del diccionari, comprovar si existeix algun valor és cost constant en diccionaris de Python i executar el `yield` també.
+En cas que existeixi algun node fill els haurem de recórrer per afegir-los al stack, aquesta operació s'executaria per cada node fill diguemn-li `c` solament **un** cop i per tant el cost d'aquesta operació es pot considerar de cost constant O(1). D'aquesta manera estem afegint al stack en els pitjors dels casos cada node del arbre `n`.
 
 Per tant, podem aproximar el cost com:
 ```
 T(n) = C1 + C2 * (C3 + C4 + C5 + C6 + (C7 * C8))
-     = 1 + n * (n-1 + n-1 + n-1 + n-1 + (c * 1))
-     = 1 + 5n - 4n + n*c
+     = 1 + n * (1 + 1 + 1 + 1 + (c))
+     = 1 + 5n + n*c
      ≈ n
 ```
 Obtenint un cost lineal: O(n).
@@ -77,11 +80,11 @@ Aleshores podem calcular el cost total d'aquesta implementació:
 T(n) = construct_tree(n) + search_deepest_childs(n) + result_dict(n) + max(n) =
      ≈ n + n + n + n 
      ≈ 4n
-     ≈ o(n)
+     ≈ n
 ```
 Sent la funció de cerca la predominant mostrant un cost O(n).
 
-## Anàlisi: Implementació en Haskell
+### Implementació en Haskell
 La implementació en haskell s'ha de realitzar de forma recursiva, ja que aquesta és la gràcia del llenguatge. La implementació realitzada segueix el mateix procediment que el realitzat amb Python.
 
 Primer convertirem les dades obtingudes del fitxer a una llista de parelles amb el format (Pare:Fill) :
@@ -124,24 +127,37 @@ La nostra funció depèn de la crida a una funció auxiliar `deepestHelper`, aqu
 La crida recursiva es pot resumir en una iteració sobre la llista de claus representant els pares. Per a cada clau, comprova si ja existeix com a clau al diccionari d'arbre.
 Si el pare existeix, obté la llista dels seus fills del diccionari.
 Si el pare no existeix, considera que el pare no té fills (llista buida).
-Finalment, concatena totes aquestes llistes de fills en una única llista i l'assigna a la variable fills. A l'hora de concatenar aquesta llista de fills solament afegirà cada node un cop. El cost d'aquesta operació es redueix a O(n) en concret amb l'operació `concatMap` en existir la possibilitat de concatenar tots els fills o nodes del arbre.
+Finalment, concatena totes aquestes llistes de fills en una única llista i l'assigna a la variable fills. A l'hora de concatenar aquesta llista de fills solament afegirà cada node un cop. 
+El cost d'aquesta funció es redueix a O(n) en concret amb l'operació `concatMap` en existir la possibilitat de concatenar tots els fills o nodes del arbre.
 
 Si tornem a calcular el cost en conjunt del programa obtenim que:
 ```
 T(n) = createPairs(n) + buildTree(n) + deepestChildren(n) + sort(n) = 
      ≈ n + n + n + n
      ≈ 4n
-     ≈ O(n)
+     ≈ n
 ```
 Que és el mateix cost obtingut en la implementació en Python.
 
-### Anàlisi del cost experimental en el codi de Python
+
+## Anàlisi Experimental
+
+A continuació es mostraran els resultats experimentals obtinguts en totes dues implementacions. Per calcular aquests costos experimentals s'han utilitzat diferents nivells de l'estructura d'arbre n-ari i es calcula el temps d'execució de cada nivell per finalment obtenir les gràfiques mostrades a continuació.
+
+### Python
+
 ![alt text](practica1/gerarquia.py.time.png)
+
 Com es pot observar en aquesta gràfica, el cost experimental pel codi de Python no varia massa pels 5 primers nivells, però a partir d'aquí el temps d'execució comença a incrementar-se, fent-se notar aquest creixement encara més a partir dels 8 nivells i convertint-se en exponencial a partir dels 10.
 
 
-### Anàlisi del cost experimental en el codi de Haskell
-![alt text](practica1/gerarquia.time.png)
-Com es pot observar en aquesta gràfica, el cost experimental pel codi de Haskell es manté constant fins els 7 nivells, on comença a crèixer, fent-se notar aquest canvi encara més a partir dels 9 nivells i convertint-se en exponencial a partir dels 10. Com es pot veure, el cost experimental del nostre codi és molt més alt en Haskell que en Python, arribant fins als 12 segons d'execució pels 11 nivells, mentre que a Python, pel mateix nombre de nivells, és d'1.75 segons. Aquesta gran diferència és deguda a que Python fa servir HashMaps dinàmics pels diccionaris, mentre que Haskell no ho fa servir.
+### Haskell
 
-El nombre de nodes creix exponencialment al tractra-se d'un arbre n-ari, 
+![alt text](practica1/gerarquia.time.png)
+
+Com es pot observar en aquesta gràfica, el cost experimental pel codi de Haskell es manté constant fins els primers 7 nivells, on comença a crèixer, fent-se notar aquest canvi, encara més, a partir dels 9 nivells i convertint-se en exponencial a partir dels 10. Com es pot veure, el cost experimental del nostre codi és molt més alt en Haskell que en Python, arribant fins als 12 segons d'execució pels 11 nivells, mentre que a Python, pel mateix nombre de nivells, és d'1.75 segons.
+
+D'aquests costos en podem traure dues conclusions:
+1. **Cost Exponencial:** Encara que a nivell teòric hem trobat un cost O(n) en funció del nombre de nodes, la quantitat de nodes que ha de tractar la funció incrementa de forma exponencial. Això es degut pel fet que un arbre n-ari, en funció del nombre de nivells que tingui, anirem incrementant el nombre de fills per n i de forma general el nombre de nodes en un arbre n-ari escala en `n^n`. Per tant, encara que la complexitat de la funció sigui lineal les dades que ha de tractar son tant grans que el cost experimental incrementa exponencialment.
+
+2. **Implementacions en LLenguatges**: Encara que els costs e implementacions en tots dos llenguatges són equivalents, Haskell presenta una diferència molt gran en els temps d'execució, sobretot al tractar amb arbres de 11 nivells. Despres de certa recerca hem trobat que les implementacions dels diccionaris en Haskell no utilitzen HashMaps, estructures de dades molt eficients, que en el cas de Python si s'utilitzen de forma interna incrementant molt la eficiència.
