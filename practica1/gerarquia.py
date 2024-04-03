@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Module to analyze hierarchical structures.
 """
