@@ -161,3 +161,16 @@ D'aquests costos en podem traure dues conclusions:
 1. **Cost Exponencial:** Encara que a nivell teòric hem trobat un cost O(n) en funció del nombre de nodes, la quantitat de nodes que ha de tractar la funció incrementa de forma exponencial. Això es degut pel fet que un arbre n-ari, en funció del nombre de nivells que tingui, anirem incrementant el nombre de fills per n i de forma general el nombre de nodes en un arbre n-ari escala en `n^n`. Per tant, encara que la complexitat de la funció sigui lineal les dades que ha de tractar son tant grans que el cost experimental incrementa exponencialment.
 
 2. **Implementacions en LLenguatges**: Encara que els costs e implementacions en tots dos llenguatges són equivalents, Haskell presenta una diferència molt gran en els temps d'execució, sobretot al tractar amb arbres de 11 nivells. Despres de certa recerca hem trobat que les implementacions dels diccionaris en Haskell no utilitzen HashMaps, estructures de dades molt eficients, que en el cas de Python si s'utilitzen de forma interna incrementant molt la eficiència.
+
+## Conclusions
+
+Encara que el cost obtingut en aquesta implementació ha resultat ser O(n), no podem evitar pensar si existiria un cost més eficient. Al final l'algorsime que hem estat utilitzant no deixa de ser una implementació del DFS (Depth First Search). Si intentessim aconseguir una complexitat temporal d'O(log n), normalment hauríeu de modificar l'algorisme per reduir el nombre de nodes o arestes visitades durant el recorregut. No obstant això, en una estructura d'arbre jeràrquica general, no és possible aconseguir la complexitat O(log n) per a tasques com trobar els nodes més profunds, ja que encara necessitaries travessar tots els nodes en el pitjor dels casos.
+
+A nivell d'experimentació amb els temps d'execució ha estat interessant observar com diferents llenguatges s'enfoquen a l'hora de realitzar certes implementacions. En el cas de Python hem mencionat que s'utilitzen HashTables el que aporta costos pràcticament constants en moltes operacions dins del diccionari, menters que Haskell opta per una implementació sense HashTables per diferents motius: 
+- Haskell prioritza la immutabilitat, mentre que les taules hash requereixen mutabilitat per a les operacions. 
+- La programació funcional es basa en funcions pures, i les taules hash introdueixen aleatorietat. 
+- Els arbres equilibrats ofereixen un rendiment més predictible en Haskell que les taules de hash (Encara que en aquest cas no ha afavorit gaire). 
+- La programació funcional valora el comportament determinista, i les taules de hash poden ser no deterministes.
+
+
+En general és una pràctica que aporta una visió diferent a l'hora d'enfocar un mateix problema en dues formes d'implementació.
