@@ -85,10 +85,10 @@ if __name__ == "__main__":
     solucio = None
     if args.algorithm == 'backtracking':
         solucio = min( backtracking( capacitat, umpalumpes ) )
-        print("CALLS:", backtracking.calls)
+        # print("CALLS:", backtracking.calls)
     elif args.algorithm == 'improved':
         solucio = improved( capacitat, umpalumpes )
-        print("CALLS:", improved.calls)
+        # print("CALLS:", improved.calls)
     else:
         raise Exception("Unknown algorithm", args.algorithm)
     print(solucio)
