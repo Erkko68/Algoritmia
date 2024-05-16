@@ -1,2 +1,2 @@
-usage: tunnel.py [-h] [--algorithm ALGORITHM] input
-tunnel.py: error: unrecognized arguments: tests/input3-3-0.txt
+CALLS: 7
+89

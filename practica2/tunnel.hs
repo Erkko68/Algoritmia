@@ -1,19 +1,25 @@
-import System.IO
+
 import System.Environment
 
-main :: IO ()
+tunnel :: Int -> [Int] -> Int
+-- Falta implementar
+
+stringToTuple :: [String] -> (Int, Int)
+stringToTuple [x, y] = (read x, read y)
+
+stringsToInts :: [String] -> [Int]
+stringsToInts = map read
+
+-- main = putStrLn $ show $ tunel 2 [1,2,10,5]
+main :: IO()
 main = do
-    -- Get command-line arguments
-    args <- getArgs
-    -- Check if a filename is provided
-    if null args
-        then putStrLn "Usage: ./tunnel test.txt"
-    else do
-        let filename = head args                        -- Extract the filename from command-line arguments
-        contents <- readFile filename                   -- Read contents from the file
-        let params = lines contents                     -- Split file contents into lines
-            primeraLinia = head params                  -- Extract the root node from the first line
-            capacitat = last (words primeraLinia)       -- Get the maximum number of umpalumpas in the tunnel
-            llista = last params                        -- Obtenir llista de Umpalumpas 
-        putStrLn (capacitat)              -- Print the deepest children
-        putStrLn llista
+   args <- getArgs
+   contents <- readFile (head args)
+
+   let [first_line, second_line] = lines contents
+   let (capacity, number) = stringToTuple $ words first_line
+   let umpalumpas = stringsToInts $ words second_line
+
+   print (backtracking capacity umpalumpas [] True 0)
+
+

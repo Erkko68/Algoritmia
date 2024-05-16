@@ -10,8 +10,9 @@ directory = "tests/"
 xinitial = 3
 xfinal = int(sys.argv[1])
 
-for algorithm in ["backtracking", "millorat"]:
+for algorithm in ["backtracking", "improved"]:
     times = []
+    print("Algorithm: ", algorithm)
     for x in range(xinitial, xfinal + 1):
         point_time = 0
         for instance in range(10):
@@ -20,7 +21,7 @@ for algorithm in ["backtracking", "millorat"]:
             print(f"Testing {input_file}")
             initial_time = time.time()
             process = subprocess.run(
-                ['python3',  './tunnel.py', '--algorithm ' + algorithm, input_file],
+                ['python3',  './tunnel.py', '--algorithm', algorithm, input_file],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
@@ -43,11 +44,13 @@ for algorithm in ["backtracking", "millorat"]:
 
     xvalues, yvalues = zip(*times)
 
-    plt.clf()
-    plt.plot(xvalues, yvalues)
-    plt.xticks(range(xinitial, xfinal + 1))
-    plt.title("Time to solve the hierarchy problem with " + algorithm)
-    plt.xlabel("Number of Levels")
-    plt.ylabel("Time (s)")
-    #plt.show()
-    plt.savefig(algorithm + ".time.png")
+    #plt.clf()
+    plt.plot(xvalues, yvalues, label = algorithm)
+
+plt.legend(loc="upper left")
+plt.xticks(range(xinitial, xfinal + 1))
+plt.title("Time to solve the tunnel problem")
+plt.xlabel("Number of Umpalumpas")
+plt.ylabel("Time (s)")
+#plt.show()
+plt.savefig("time.png")
