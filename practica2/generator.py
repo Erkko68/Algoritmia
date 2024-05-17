@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import random
 import tunnel 
@@ -18,15 +17,19 @@ def create_instance( input_filename, output_filename, capacitat, num_elements):
 
 def main():
     import sys
+    import os
 
-    if len(sys.argv) > 2:
+    if len(sys.argv) >= 2:
         capacitat = int(sys.argv[1])
     else:
         capacitat = 3
     directory = "tests/"
     number_of_instances = 10
     min_elements = capacitat
-    max_elements = capacitat * 2
+    max_elements = capacitat + 4
+
+    if not os.path.isdir(directory):
+       os.mkdir(directory)
 
     for num_elements in range(min_elements, max_elements):
         print("Creating instances for", num_elements, "elements")

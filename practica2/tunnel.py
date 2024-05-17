@@ -84,7 +84,8 @@ if __name__ == "__main__":
     capacitat, umpalumpes = llegir(args.input)
     solucio = None
     if args.algorithm == 'backtracking':
-        solucio = min( backtracking( capacitat, umpalumpes ) )
+        solucions = backtracking( capacitat, umpalumpes )
+        solucio = 0 if not solucions else min(solucions)
         # print("CALLS:", backtracking.calls)
     elif args.algorithm == 'improved':
         solucio = improved( capacitat, umpalumpes )

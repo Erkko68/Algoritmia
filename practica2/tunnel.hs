@@ -42,6 +42,6 @@ main = do
     let umpalumpas = stringsToInts $ words second_line
 
     let result = tunel capacity umpalumpas [] True 0
-    putStrLn $ "Result: " ++ show result
-    putStrLn $ "Best result: " ++ show (minimum result)
+    --putStrLn $ "Result: " ++ show result
+    putStrLn $ show (minimum result)
     --mapM_ print result
