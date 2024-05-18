@@ -10,7 +10,7 @@ directory = "tests/"
 xinitial = 3
 xfinal = int(sys.argv[1])
 
-for algorithm in ["backtracking", "improved"]:
+for algorithm in ["backtracking", "improved", "greedy"]:
     times = []
     print("Algorithm: ", algorithm)
     for x in range(xinitial, xfinal + 1):

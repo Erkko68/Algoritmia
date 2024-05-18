@@ -72,6 +72,41 @@ def improved( capacitat, fora, dins = [], entrem = True, temps = 0, millor_resul
             millor_resultat = min(millor_resultat, s)
     return millor_resultat
 
+@counted
+def greedy(capacitat, fora, dins = [], entrem = True, temps = 0):
+    if not fora:
+        return temps
+
+    # Ordenem la llista d'elements fora per processar de forma voraç
+    fora.sort()
+
+    # Estratègia voraç: sempre seleccionar els més ràpids
+    if entrem:
+        # Comprovar si hi ha suficients elements per formar una esquadra
+        if len(fora) < capacitat:
+            return 0
+        # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
+        esquadra = fora[:capacitat]
+        # Calcular el temps per aquesta esquadra
+        esquadra_time = max(esquadra)
+        # Eliminar els elements de la esquadra dels elements de fora
+        fora = fora[capacitat:]
+        # Afegir la esquadra als elements de dins
+        dins.extend(esquadra)
+        # Actualizar el temps total acumulat
+        temps += esquadra_time
+    else:
+        # Seleccionar l'element més ràpid dins per a que torni
+        umpalumpa = min(dins)
+        # Eliminar aquest element de la llista de dins
+        dins.remove(umpalumpa)
+        # Afegir aquest element a la llista de fora
+        fora.append(umpalumpa)
+        # Actualitzar el temps total acumulat
+        temps += umpalumpa
+
+    # Continuar el procés recursivament canviant l'estat d'entrem
+    return greedy(capacitat, fora, dins, not entrem, temps)
 
 if __name__ == "__main__":
     import argparse
@@ -91,6 +126,10 @@ if __name__ == "__main__":
         solucio = improved( capacitat, umpalumpes )
         solucio = 0 if solucio == float('inf') else solucio
         # print("CALLS:", improved.calls)
+    elif args.algorithm == 'greedy':
+        solucio = greedy( capacitat, umpalumpes )
+        solucio = 0 if solucio == float('inf') else solucio
+        # print("CALLS:", greedy.calls)
     else:
         raise Exception("Unknown algorithm", args.algorithm)
     print(solucio)
