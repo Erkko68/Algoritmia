@@ -89,6 +89,7 @@ if __name__ == "__main__":
         # print("CALLS:", backtracking.calls)
     elif args.algorithm == 'improved':
         solucio = improved( capacitat, umpalumpes )
+        solucio = 0 if solucio == float('inf') else solucio
         # print("CALLS:", improved.calls)
     else:
         raise Exception("Unknown algorithm", args.algorithm)

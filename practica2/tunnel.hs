@@ -43,5 +43,7 @@ main = do
 
     let result = tunel capacity umpalumpas [] True 0
     --putStrLn $ "Result: " ++ show result
-    putStrLn $ show (minimum result)
+    if null result
+        then putStrLn "0"
+        else putStrLn $ show (minimum result)
     --mapM_ print result
