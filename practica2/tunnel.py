@@ -108,7 +108,7 @@ def greedy(capacitat, fora, dins = [], entrem = True, temps = 0):
     # Continuar el procés recursivament canviant l'estat d'entrem
     return greedy(capacitat, fora, dins, not entrem, temps)
 
-
+@counted
 def greedy2(capacitat, fora, dins = [], entrem = True, rapids = True, temps = 0):
     if not fora:
         return temps
@@ -244,15 +244,15 @@ if __name__ == "__main__":
     elif args.algorithm == 'greedy2':
         solucio = greedy2( capacitat, umpalumpes )
         solucio = 0 if solucio == float('inf') else solucio
-        # print("CALLS:", greedy.calls)
+        # print("CALLS:", greedy2.calls)
     elif args.algorithm == 'greedy3':
         solucio = greedy3( capacitat, umpalumpes )
         solucio = 0 if solucio == float('inf') else solucio
-        # print("CALLS:", greedy.calls)
+        # print("CALLS:", greedy3.calls)
     elif args.algorithm == 'greedy4':
         solucio = greedy4( capacitat, umpalumpes )
         solucio = 0 if solucio == float('inf') else solucio
-        # print("CALLS:", greedy.calls)
+        # print("CALLS:", greedy4.calls)
     else:
         raise Exception("Unknown algorithm", args.algorithm)
     print(solucio)

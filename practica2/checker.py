@@ -10,7 +10,7 @@ directory = "tests/"
 xinitial = 3
 xfinal = int(sys.argv[1])
 
-for algorithm in ["backtracking", "improved", "greedy4"]:
+for algorithm in ["backtracking", "improved", "greedy", "greedy2", "greedy3", "greedy4"]:
     times = []
     print("Algorithm: ", algorithm)
     for x in range(xinitial, xfinal + 1):
@@ -35,7 +35,7 @@ for algorithm in ["backtracking", "improved", "greedy4"]:
                 output_file = os.path.join(directory, f"output3-{x}-{instance}.txt")
                 subprocess.run(["diff", "output.txt", output_file], check=True)
             except subprocess.CalledProcessError:
-                if algorithm != 'greedy4':
+                if algorithm not in ["greedy", "greedy2", "greedy3", "greedy4"]:
                     print("#### Error in ", output_file)
                     raise
 
