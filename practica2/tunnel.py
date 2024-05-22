@@ -28,11 +28,13 @@ def rem_list( llista, elements ):
     return resultat
 
 def combinacions( llista, mida, solucio = []):
+    if len(llista) < mida: # He afegit aquesta condició
+        return [llista]
     if len(solucio) == mida:
         return [solucio]
     solucions = []
-    for element in llista:
-        s = combinacions( rem(llista, element), mida, solucio + [element])
+    for element in [x for x in llista if x not in solucio]:
+        s = combinacions( llista, mida, solucio + [element])
         solucions += s
     return solucions
 
@@ -60,16 +62,14 @@ def improved( capacitat, fora, dins = [], entrem = True, temps = 0, millor_resul
     if entrem:
         for esquadra in combinacions( fora, capacitat ):
             esquadra_time = max(esquadra)
-            if temps + esquadra_time >= millor_resultat:
-                return millor_resultat
-            s = improved( capacitat, rem_list(fora, esquadra), dins + esquadra, not entrem, temps + esquadra_time, millor_resultat)
-            millor_resultat = min(millor_resultat, s)
+            if temps + esquadra_time < millor_resultat:
+                s = improved( capacitat, rem_list(fora, esquadra), dins + esquadra, not entrem, temps + esquadra_time, millor_resultat)
+                millor_resultat = min(millor_resultat, s)
     else:
         for umpalumpa in dins :
-            if temps + umpalumpa >= millor_resultat:
-                return millor_resultat
-            s = improved( capacitat, fora + [umpalumpa], rem(dins, umpalumpa), not entrem, temps+umpalumpa, millor_resultat)
-            millor_resultat = min(millor_resultat, s)
+            if temps + umpalumpa < millor_resultat:
+                s = improved( capacitat, fora + [umpalumpa], rem(dins, umpalumpa), not entrem, temps+umpalumpa, millor_resultat)
+                millor_resultat = min(millor_resultat, s)
     return millor_resultat
 
 @counted
@@ -84,7 +84,7 @@ def greedy(capacitat, fora, dins = [], entrem = True, temps = 0):
     if entrem:
         # Comprovar si hi ha suficients elements per formar una esquadra
         if len(fora) < capacitat:
-            return 0
+            return temps + max(fora)
         # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
         esquadra = fora[:capacitat]
         # Calcular el temps per aquesta esquadra
@@ -108,6 +108,118 @@ def greedy(capacitat, fora, dins = [], entrem = True, temps = 0):
     # Continuar el procés recursivament canviant l'estat d'entrem
     return greedy(capacitat, fora, dins, not entrem, temps)
 
+
+def greedy2(capacitat, fora, dins = [], entrem = True, rapids = True, temps = 0):
+    if not fora:
+        return temps
+
+    # Ordenem la llista d'elements fora per processar de forma voraç
+    fora.sort()
+
+    # Estratègia voraç: sempre seleccionar els més ràpids
+    if entrem:
+        # Comprovar si hi ha suficients elements per formar una esquadra
+        if len(fora) < capacitat:
+            return temps + max(fora)
+        if rapids:
+            # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
+            esquadra = fora[:capacitat]
+        else:
+            esquadra = fora[-capacitat:]
+        rapids = not rapids
+        # Calcular el temps per aquesta esquadra
+        esquadra_time = max(esquadra)
+        # Eliminar els elements de la esquadra dels elements de fora
+        fora = fora[capacitat:]
+        # Afegir la esquadra als elements de dins
+        dins.extend(esquadra)
+        # Actualizar el temps total acumulat
+        temps += esquadra_time
+    else:
+        # Seleccionar l'element més ràpid dins per a que torni
+        umpalumpa = min(dins)
+        # Eliminar aquest element de la llista de dins
+        dins.remove(umpalumpa)
+        # Afegir aquest element a la llista de fora
+        fora.append(umpalumpa)
+        # Actualitzar el temps total acumulat
+        temps += umpalumpa
+
+    # Continuar el procés recursivament canviant l'estat d'entrem
+    return greedy2(capacitat, fora, dins, not entrem, rapids, temps)
+
+@counted
+def greedy3(capacitat, fora, dins = [], entrem = True, temps = 0):
+    if not fora:
+        return temps
+
+    # Ordenem la llista d'elements fora per processar de forma voraç
+    fora = sorted(fora, reverse=True)
+
+    # Estratègia voraç: sempre seleccionar els més ràpids
+    if entrem:
+        # Comprovar si hi ha suficients elements per formar una esquadra
+        if len(fora) < capacitat:
+            return temps + max(fora)
+        # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
+        esquadra = fora[:capacitat]
+        # Calcular el temps per aquesta esquadra
+        esquadra_time = max(esquadra)
+        # Eliminar els elements de la esquadra dels elements de fora
+        fora = fora[capacitat:]
+        # Afegir la esquadra als elements de dins
+        dins.extend(esquadra)
+        # Actualizar el temps total acumulat
+        temps += esquadra_time
+    else:
+        # Seleccionar l'element més ràpid dins per a que torni
+        umpalumpa = min(dins)
+        # Eliminar aquest element de la llista de dins
+        dins.remove(umpalumpa)
+        # Afegir aquest element a la llista de fora
+        fora.append(umpalumpa)
+        # Actualitzar el temps total acumulat
+        temps += umpalumpa
+
+    # Continuar el procés recursivament canviant l'estat d'entrem
+    return greedy3(capacitat, fora, dins, not entrem, temps)
+
+@counted
+def greedy4(capacitat, fora, dins = [], entrem = True, temps = 0):
+    if not fora:
+        return temps
+
+    # Ordenem la llista d'elements fora per processar de forma voraç
+    fora = sorted(fora, reverse=True)
+
+    # Estratègia voraç: sempre seleccionar els més ràpids
+    if entrem:
+        # Comprovar si hi ha suficients elements per formar una esquadra
+        if len(fora) < capacitat:
+            return temps + max(fora)
+        # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
+        esquadra = [fora[-1]] + fora[:capacitat-1]
+        # Calcular el temps per aquesta esquadra
+        esquadra_time = max(esquadra)
+        # Eliminar els elements de la esquadra dels elements de fora
+        fora = fora[capacitat-1:-1]
+        # Afegir la esquadra als elements de dins
+        dins.extend(esquadra)
+        # Actualizar el temps total acumulat
+        temps += esquadra_time
+    else:
+        # Seleccionar l'element més ràpid dins per a que torni
+        umpalumpa = min(dins)
+        # Eliminar aquest element de la llista de dins
+        dins.remove(umpalumpa)
+        # Afegir aquest element a la llista de fora
+        fora.append(umpalumpa)
+        # Actualitzar el temps total acumulat
+        temps += umpalumpa
+
+    # Continuar el procés recursivament canviant l'estat d'entrem
+    return greedy4(capacitat, fora, dins, not entrem, temps)
+
 if __name__ == "__main__":
     import argparse
 
@@ -129,16 +241,18 @@ if __name__ == "__main__":
     elif args.algorithm == 'greedy':
         solucio = greedy( capacitat, umpalumpes )
         solucio = 0 if solucio == float('inf') else solucio
+    elif args.algorithm == 'greedy2':
+        solucio = greedy2( capacitat, umpalumpes )
+        solucio = 0 if solucio == float('inf') else solucio
+        # print("CALLS:", greedy.calls)
+    elif args.algorithm == 'greedy3':
+        solucio = greedy3( capacitat, umpalumpes )
+        solucio = 0 if solucio == float('inf') else solucio
+        # print("CALLS:", greedy.calls)
+    elif args.algorithm == 'greedy4':
+        solucio = greedy4( capacitat, umpalumpes )
+        solucio = 0 if solucio == float('inf') else solucio
         # print("CALLS:", greedy.calls)
     else:
         raise Exception("Unknown algorithm", args.algorithm)
     print(solucio)
-
-
-# HASKELL:
-# lletres abecedari llargada solucio 
-#    | length solucio == llargada = [solucio]
-#    | otherwise = foldl (++) [] (map (\x -> lletres abecedari llargada (x:solucio)) abecedari)
-   
-# main = do 
-#    mapM_ (putStrLn . show) (lletres "abcde" 2 [])
