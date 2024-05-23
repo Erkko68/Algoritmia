@@ -12,7 +12,7 @@ En el nostre cas, ho hem fet a la inversa i només continuem per aquella branca 
 millor_resultat = min(millor_resultat, s)
 ```
 ## Greedy
-Per la implementació del greedy s'han realitzar 4 codis cadascún amb un enfocament diferent.
+Per la implementació del greedy s'han realitzat 4 codis cadascún amb un enfocament diferent.
 ### Greedy 1
 Segueix la estratègia de sempre seleccionar els més ràpids.
 ```
@@ -36,16 +36,15 @@ if len(fora) < capacitat:
 esquadra = fora[:capacitat]
 ```
 ### Greedy 4
-Va el més ràpid anant i tornant portant a la resta fins arribar al final.
+Va el més ràpid anant i tornant portant amb ells els més lents fins completar la capacitat.
 ```
 if len(fora) < capacitat:
     return temps + max(fora)
-# Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
 esquadra = [fora[-1]] + fora[:capacitat-1]
 ```
 
 ## Backtracking: Haskell
-La implementació de backtracking en Haskell segueix la mateix implementació que en python. Utilitza tres funcions auxiliars:
+La implementació de backtracking en Haskell segueix la mateixa implementació que en python. Utilitza tres funcions auxiliars:
 
 ### remEle
 S'encarrega d'eliminar un element de la llista que se li envia per paràmetre. Utilitzada quan tenim que eliminar un umpalumpa de la llista que conté els umpalumpa a fora o a dins.
@@ -66,8 +65,10 @@ Aplica la funció remEle als elements de la llista.
 Es la funció que s'encarrega de generar totes les combinacions possibles donades una llista d'elements.
 ```
 combinacions llista mida solucio
+    | length llista < mida = [llista]
     | length solucio == mida = [solucio]
-    | otherwise = foldr (\element acc -> acc ++ combinacions (remEle llista element) mida (solucio ++ [element])) [] llista
+    | otherwise = foldr (\element acc -> acc ++ combinacions llista mida (solucio ++ [element])) [] filteredList
+        where filteredList = [x | x <- llista, x `notElem` solucio]
 ```
 
 ### Tunel
