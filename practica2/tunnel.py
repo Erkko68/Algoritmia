@@ -116,7 +116,7 @@ def greedy2(capacitat, fora, dins = [], entrem = True, rapids = True, temps = 0)
     # Ordenem la llista d'elements fora per processar de forma voraç
     fora.sort()
 
-    # Estratègia voraç: sempre seleccionar els més ràpids
+    # Estratègia voraç: seleccionar una vegada els més ràpids i una vegada els més lents
     if entrem:
         # Comprovar si hi ha suficients elements per formar una esquadra
         if len(fora) < capacitat:
@@ -124,17 +124,20 @@ def greedy2(capacitat, fora, dins = [], entrem = True, rapids = True, temps = 0)
         if rapids:
             # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
             esquadra = fora[:capacitat]
+            # Eliminar els elements de la esquadra dels elements de fora
+            fora = fora[capacitat:]
         else:
+            # Formar la pitjor esquadra possible (els més lents) amb la capacitat permesa
             esquadra = fora[-capacitat:]
-        rapids = not rapids
+            # Eliminar els elements de la esquadra dels elements de fora
+            fora = fora[:-capacitat]
         # Calcular el temps per aquesta esquadra
         esquadra_time = max(esquadra)
-        # Eliminar els elements de la esquadra dels elements de fora
-        fora = fora[capacitat:]
         # Afegir la esquadra als elements de dins
         dins.extend(esquadra)
         # Actualizar el temps total acumulat
         temps += esquadra_time
+        rapids = not rapids
     else:
         # Seleccionar l'element més ràpid dins per a que torni
         umpalumpa = min(dins)
@@ -156,12 +159,12 @@ def greedy3(capacitat, fora, dins = [], entrem = True, temps = 0):
     # Ordenem la llista d'elements fora per processar de forma voraç
     fora = sorted(fora, reverse=True)
 
-    # Estratègia voraç: sempre seleccionar els més ràpids
+    # Estratègia voraç: sempre seleccionar els més lents
     if entrem:
         # Comprovar si hi ha suficients elements per formar una esquadra
         if len(fora) < capacitat:
             return temps + max(fora)
-        # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
+        # Formar la pitjor esquadra possible (els més lents) amb la capacitat permesa
         esquadra = fora[:capacitat]
         # Calcular el temps per aquesta esquadra
         esquadra_time = max(esquadra)
@@ -192,12 +195,12 @@ def greedy4(capacitat, fora, dins = [], entrem = True, temps = 0):
     # Ordenem la llista d'elements fora per processar de forma voraç
     fora = sorted(fora, reverse=True)
 
-    # Estratègia voraç: sempre seleccionar els més ràpids
+    # Estratègia voraç: seleccionar el més ràpid i els més lents fins completar la capacitat
     if entrem:
         # Comprovar si hi ha suficients elements per formar una esquadra
         if len(fora) < capacitat:
             return temps + max(fora)
-        # Formar la millor esquadra possible (els més ràpids) amb la capacitat permesa
+        # Agafar el més ràpid i els més lents fins completar la capacitat
         esquadra = [fora[-1]] + fora[:capacitat-1]
         # Calcular el temps per aquesta esquadra
         esquadra_time = max(esquadra)

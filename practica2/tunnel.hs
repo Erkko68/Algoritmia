@@ -4,8 +4,10 @@ remEle :: Eq a => [a] -> a -> [a]
 remEle llista element = filter (/= element) llista
 
 combinacions llista mida solucio
+    | length llista < mida = [llista]
     | length solucio == mida = [solucio]
-    | otherwise = foldr (\element acc -> acc ++ combinacions (remEle llista element) mida (solucio ++ [element])) [] llista
+    | otherwise = foldr (\element acc -> acc ++ combinacions llista mida (solucio ++ [element])) [] filteredList
+        where filteredList = [x | x <- llista, x `notElem` solucio]
 
 remList :: Eq a => [a] -> [a] -> [a]
 remList llista elements = foldl (\acc element -> remEle acc element) llista elements

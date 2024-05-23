@@ -4,7 +4,7 @@ tunnel: tunnel.hs
 	ghc $<
 
 test: tunnel.py
-	python3 checker.py 5
+	python3 checker.py 6
 
 zip:
 	$(RM) scripts.zip
