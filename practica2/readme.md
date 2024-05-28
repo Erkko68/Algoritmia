@@ -11,6 +11,8 @@ En el nostre cas, ho hem fet a la inversa i només continuem per aquella branca 
 ```
 millor_resultat = min(millor_resultat, s)
 ```
+A més, quan torna un umpalumpa, s'agafa el més ràpid directament, per tal d'estalviar el bucle, ja que es pot assegurar que, si s'aconsegueix un resultat millor, serà amb el temps mínim, per la qual cosa no és necessari comprovar tots els altres casos.
+
 ## Greedy
 Per la implementació del greedy s'han realitzat 4 codis, cadascun amb un enfocament diferent.
 ### Greedy 1
