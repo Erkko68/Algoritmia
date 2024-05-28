@@ -66,10 +66,10 @@ def improved( capacitat, fora, dins = [], entrem = True, temps = 0, millor_resul
                 s = improved( capacitat, rem_list(fora, esquadra), dins + esquadra, not entrem, temps + esquadra_time, millor_resultat)
                 millor_resultat = min(millor_resultat, s)
     else:
-        for umpalumpa in dins :
-            if temps + umpalumpa < millor_resultat:
-                s = improved( capacitat, fora + [umpalumpa], rem(dins, umpalumpa), not entrem, temps+umpalumpa, millor_resultat)
-                millor_resultat = min(millor_resultat, s)
+        umpalumpa = min(dins)
+        if temps + umpalumpa < millor_resultat:
+            s = improved( capacitat, fora + [umpalumpa], rem(dins, umpalumpa), not entrem, temps+umpalumpa, millor_resultat)
+            millor_resultat = min(millor_resultat, s)
     return millor_resultat
 
 @counted
